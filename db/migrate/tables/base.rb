@@ -54,11 +54,11 @@ class Tables::Base
     migration.change_table table_name, bulk: true, &block
   end
 
-  def self.table(migration)
+  def self.table(_migration)
     raise NotImplementedError
   end
 
-  def self.indices(migration)
+  def self.indices(_migration)
     raise NotImplementedError
   end
 end
