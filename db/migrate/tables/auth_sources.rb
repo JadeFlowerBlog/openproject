@@ -30,52 +30,29 @@
 
 require_relative 'base'
 
-class Tables::WorkPackages < Tables::Base
-  # rubocop:disable Metrics/AbcSize
+class Tables::AuthSources < Tables::Base
   def self.table(migration)
     create_table migration do |t|
-      t.integer :type_id, default: 0, null: false
-      t.string :subject, default: '', null: false
-      t.text :description
-      t.date :due_date
-      t.integer :category_id
-      t.integer :status_id, default: 0, null: false
-      t.integer :assigned_to_id
-      t.integer :priority_id, null: true
-      t.integer :fixed_version_id
-      t.integer :author_id, default: 0, null: false
-      t.integer :lock_version, default: 0, null: false
-      t.integer :done_ratio, default: 0, null: false
-      t.float :estimated_hours
-      t.timestamp :created_at
-      t.timestamp :updated_at
-      t.date :start_date
-
-      t.belongs_to :project, default: 0, null: false
-      t.belongs_to :responsible
-
-      # Nested Set
-      t.belongs_to :parent, default: nil
-      t.integer :root_id, default: nil
-      t.integer :lft, default: nil
-      t.integer :rgt, default: nil
+      t.string :type, limit: 30, default: '', null: false
+      t.string :name, limit: 60, default: '', null: false
+      t.string :host, limit: 60
+      t.integer :port
+      t.string :account
+      t.string :account_password, default: ''
+      t.string :base_dn
+      t.string :attr_login, limit: 30
+      t.string :attr_firstname, limit: 30
+      t.string :attr_lastname, limit: 30
+      t.string :attr_mail, limit: 30
+      t.boolean :onthefly_register, default: false, null: false
+      t.boolean :tls, default: false, null: false
+      t.string :attr_admin
     end
   end
 
   def self.indices(migration)
     create_indices(migration) do |t|
-      # Nested Set
-      t.index %i[root_id lft rgt]
-
-      t.index :type_id
-      t.index :status_id
-      t.index :category_id
-      t.index :author_id
-      t.index :assigned_to_id
-      t.index :created_at
-      t.index :fixed_version_id
-      t.index :updated_at
-      t.index %i[project_id updated_at]
+      t.index %i[id type], name: 'index_auth_sources_on_id_and_type'
     end
   end
 end

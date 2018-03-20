@@ -31,10 +31,7 @@
 require_relative 'base'
 
 class Tables::Users < Tables::Base
-  def self.table_name
-    :users
-  end
-
+  # rubocop:disable Metrics/AbcSize
   def self.table(migration)
     create_table migration do |t|
       t.string :login, limit: 256, default: '', null: false

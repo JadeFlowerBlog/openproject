@@ -28,37 +28,16 @@
 # See docs/COPYRIGHT.rdoc for more details.
 #++
 
-module Tables; end
+module Aggregated; end
 
-class Tables::Base
-  def self.create(migration)
-    migration.say_with_time "Create #{table_name} table" do
-      table(migration)
-      indices(migration)
+class Aggregated::Base
+  def self.migrations
+    raise NotImplementedError
+  end
+
+  def self.normalized_migrations
+    migrations.split.map do |m|
+      m.gsub(/_.*\z/, '').to_i
     end
-  end
-
-  def self.table_name
-    name.demodulize.underscore.to_s
-  end
-
-  def self.id_options
-    { id: :integer }
-  end
-
-  def self.create_table(migration, &block)
-    migration.create_table table_name, id_options.merge(bulk: true), &block
-  end
-
-  def self.create_indices(migration, &block)
-    migration.change_table table_name, bulk: true, &block
-  end
-
-  def self.table(_migration)
-    raise NotImplementedError
-  end
-
-  def self.indices(_migration)
-    raise NotImplementedError
   end
 end

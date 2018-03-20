@@ -1,5 +1,3 @@
-#-- encoding: UTF-8
-
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
@@ -30,52 +28,22 @@
 
 require_relative 'base'
 
-class Tables::WorkPackages < Tables::Base
-  # rubocop:disable Metrics/AbcSize
+class Tables::Statuses < Tables::Base
   def self.table(migration)
     create_table migration do |t|
-      t.integer :type_id, default: 0, null: false
-      t.string :subject, default: '', null: false
-      t.text :description
-      t.date :due_date
-      t.integer :category_id
-      t.integer :status_id, default: 0, null: false
-      t.integer :assigned_to_id
-      t.integer :priority_id, null: true
-      t.integer :fixed_version_id
-      t.integer :author_id, default: 0, null: false
-      t.integer :lock_version, default: 0, null: false
-      t.integer :done_ratio, default: 0, null: false
-      t.float :estimated_hours
-      t.timestamp :created_at
-      t.timestamp :updated_at
-      t.date :start_date
-
-      t.belongs_to :project, default: 0, null: false
-      t.belongs_to :responsible
-
-      # Nested Set
-      t.belongs_to :parent, default: nil
-      t.integer :root_id, default: nil
-      t.integer :lft, default: nil
-      t.integer :rgt, default: nil
+      t.string :name, limit: 30, default: '', null: false
+      t.boolean :is_closed, default: false, null: false
+      t.boolean :is_default, default: false, null: false
+      t.integer :position, default: 1
+      t.integer :default_done_ratio
     end
   end
 
   def self.indices(migration)
     create_indices(migration) do |t|
-      # Nested Set
-      t.index %i[root_id lft rgt]
-
-      t.index :type_id
-      t.index :status_id
-      t.index :category_id
-      t.index :author_id
-      t.index :assigned_to_id
-      t.index :created_at
-      t.index :fixed_version_id
-      t.index :updated_at
-      t.index %i[project_id updated_at]
+      t.index :is_closed, name: 'index_issue_statuses_on_is_closed'
+      t.index :is_default, name: 'index_issue_statuses_on_is_default'
+      t.index :position, name: 'index_issue_statuses_on_position'
     end
   end
 end

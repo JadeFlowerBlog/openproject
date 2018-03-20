@@ -30,52 +30,29 @@
 
 require_relative 'base'
 
-class Tables::WorkPackages < Tables::Base
-  # rubocop:disable Metrics/AbcSize
+class Tables::Attachments < Tables::Base
   def self.table(migration)
     create_table migration do |t|
-      t.integer :type_id, default: 0, null: false
-      t.string :subject, default: '', null: false
-      t.text :description
-      t.date :due_date
-      t.integer :category_id
-      t.integer :status_id, default: 0, null: false
-      t.integer :assigned_to_id
-      t.integer :priority_id, null: true
-      t.integer :fixed_version_id
+      t.integer :container_id, default: 0, null: false
+      t.string :container_type, limit: 30, default: '', null: false
+      t.string :filename, default: '', null: false
+      t.string :disk_filename, default: '', null: false
+      t.integer :filesize, default: 0, null: false
+      t.string :content_type, default: ''
+      t.string :digest, limit: 40, default: '', null: false
+      t.integer :downloads, default: 0, null: false
       t.integer :author_id, default: 0, null: false
-      t.integer :lock_version, default: 0, null: false
-      t.integer :done_ratio, default: 0, null: false
-      t.float :estimated_hours
-      t.timestamp :created_at
-      t.timestamp :updated_at
-      t.date :start_date
-
-      t.belongs_to :project, default: 0, null: false
-      t.belongs_to :responsible
-
-      # Nested Set
-      t.belongs_to :parent, default: nil
-      t.integer :root_id, default: nil
-      t.integer :lft, default: nil
-      t.integer :rgt, default: nil
+      t.datetime :created_on
+      t.string :description
+      t.string :file
     end
   end
 
   def self.indices(migration)
     create_indices(migration) do |t|
-      # Nested Set
-      t.index %i[root_id lft rgt]
-
-      t.index :type_id
-      t.index :status_id
-      t.index :category_id
-      t.index :author_id
-      t.index :assigned_to_id
-      t.index :created_at
-      t.index :fixed_version_id
-      t.index :updated_at
-      t.index %i[project_id updated_at]
+      t.index :author_id, name: 'index_attachments_on_author_id'
+      t.index %i[container_id container_type], name: 'index_attachments_on_container_id_and_container_type'
+      t.index :created_on, name: 'index_attachments_on_created_on'
     end
   end
 end

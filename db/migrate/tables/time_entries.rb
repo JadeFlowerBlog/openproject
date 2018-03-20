@@ -30,52 +30,32 @@
 
 require_relative 'base'
 
-class Tables::WorkPackages < Tables::Base
-  # rubocop:disable Metrics/AbcSize
+class Tables::TimeEntries < Tables::Base
   def self.table(migration)
     create_table migration do |t|
-      t.integer :type_id, default: 0, null: false
-      t.string :subject, default: '', null: false
-      t.text :description
-      t.date :due_date
-      t.integer :category_id
-      t.integer :status_id, default: 0, null: false
-      t.integer :assigned_to_id
-      t.integer :priority_id, null: true
-      t.integer :fixed_version_id
-      t.integer :author_id, default: 0, null: false
-      t.integer :lock_version, default: 0, null: false
-      t.integer :done_ratio, default: 0, null: false
-      t.float :estimated_hours
-      t.timestamp :created_at
-      t.timestamp :updated_at
-      t.date :start_date
-
-      t.belongs_to :project, default: 0, null: false
-      t.belongs_to :responsible
-
-      # Nested Set
-      t.belongs_to :parent, default: nil
-      t.integer :root_id, default: nil
-      t.integer :lft, default: nil
-      t.integer :rgt, default: nil
+      t.integer :project_id, null: false
+      t.integer :user_id, null: false
+      t.belongs_to :work_package
+      t.float :hours, null: false
+      t.string :comments
+      t.integer :activity_id, null: false
+      t.date :spent_on, null: false
+      t.integer :tyear, null: false
+      t.integer :tmonth, null: false
+      t.integer :tweek, null: false
+      t.datetime :created_on, null: false
+      t.datetime :updated_on, null: false
     end
   end
 
   def self.indices(migration)
     create_indices(migration) do |t|
-      # Nested Set
-      t.index %i[root_id lft rgt]
-
-      t.index :type_id
-      t.index :status_id
-      t.index :category_id
-      t.index :author_id
-      t.index :assigned_to_id
-      t.index :created_at
-      t.index :fixed_version_id
-      t.index :updated_at
-      t.index %i[project_id updated_at]
+      t.index :activity_id, name: 'index_time_entries_on_activity_id'
+      t.index :created_on, name: 'index_time_entries_on_created_on'
+      t.index :work_package_id, name: 'time_entries_issue_id' # issue_id for backwards compatibility
+      t.index :project_id, name: 'time_entries_project_id'
+      t.index :user_id, name: 'index_time_entries_on_user_id'
+      t.index %i[project_id updated_on]
     end
   end
 end

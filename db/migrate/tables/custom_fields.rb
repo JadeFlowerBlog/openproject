@@ -30,52 +30,35 @@
 
 require_relative 'base'
 
-class Tables::WorkPackages < Tables::Base
+class Tables::CustomFields < Tables::Base
   # rubocop:disable Metrics/AbcSize
   def self.table(migration)
     create_table migration do |t|
-      t.integer :type_id, default: 0, null: false
-      t.string :subject, default: '', null: false
-      t.text :description
-      t.date :due_date
-      t.integer :category_id
-      t.integer :status_id, default: 0, null: false
-      t.integer :assigned_to_id
-      t.integer :priority_id, null: true
-      t.integer :fixed_version_id
-      t.integer :author_id, default: 0, null: false
-      t.integer :lock_version, default: 0, null: false
-      t.integer :done_ratio, default: 0, null: false
-      t.float :estimated_hours
-      t.timestamp :created_at
-      t.timestamp :updated_at
-      t.date :start_date
-
-      t.belongs_to :project, default: 0, null: false
-      t.belongs_to :responsible
-
-      # Nested Set
-      t.belongs_to :parent, default: nil
-      t.integer :root_id, default: nil
-      t.integer :lft, default: nil
-      t.integer :rgt, default: nil
+      t.string :type, limit: 30, default: '', null: false
+      t.string :name, limit: 30, default: '', null: false
+      t.string :field_format, limit: 30, default: '', null: false
+      t.text :possible_values
+      t.string :regexp, default: ''
+      t.integer :min_length, default: 0, null: false
+      t.integer :max_length, default: 0, null: false
+      t.boolean :is_required, default: false, null: false
+      t.boolean :is_for_all, default: false, null: false
+      t.boolean :is_filter, default: false, null: false
+      t.integer :position, default: 1
+      t.boolean :searchable, default: false
+      t.text :default_value
+      t.boolean :editable, default: true
+      t.boolean :visible, default: true, null: false
+      t.boolean :multi_value, default: false
+      t.text :default_value
+      t.datetime :created_at, :datetime
+      t.datetime :updated_at, :datetime
     end
   end
 
   def self.indices(migration)
     create_indices(migration) do |t|
-      # Nested Set
-      t.index %i[root_id lft rgt]
-
-      t.index :type_id
-      t.index :status_id
-      t.index :category_id
-      t.index :author_id
-      t.index :assigned_to_id
-      t.index :created_at
-      t.index :fixed_version_id
-      t.index :updated_at
-      t.index %i[project_id updated_at]
+      t.index %i[id type], name: 'index_custom_fields_on_id_and_type'
     end
   end
 end

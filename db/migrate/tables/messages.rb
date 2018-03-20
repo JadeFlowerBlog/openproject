@@ -30,52 +30,32 @@
 
 require_relative 'base'
 
-class Tables::WorkPackages < Tables::Base
-  # rubocop:disable Metrics/AbcSize
+class Tables::Messages < Tables::Base
   def self.table(migration)
     create_table migration do |t|
-      t.integer :type_id, default: 0, null: false
+      t.integer :board_id, null: false
+      t.integer :parent_id
       t.string :subject, default: '', null: false
-      t.text :description
-      t.date :due_date
-      t.integer :category_id
-      t.integer :status_id, default: 0, null: false
-      t.integer :assigned_to_id
-      t.integer :priority_id, null: true
-      t.integer :fixed_version_id
-      t.integer :author_id, default: 0, null: false
-      t.integer :lock_version, default: 0, null: false
-      t.integer :done_ratio, default: 0, null: false
-      t.float :estimated_hours
-      t.timestamp :created_at
-      t.timestamp :updated_at
-      t.date :start_date
-
-      t.belongs_to :project, default: 0, null: false
-      t.belongs_to :responsible
-
-      # Nested Set
-      t.belongs_to :parent, default: nil
-      t.integer :root_id, default: nil
-      t.integer :lft, default: nil
-      t.integer :rgt, default: nil
+      t.text :content
+      t.integer :author_id
+      t.integer :replies_count, default: 0, null: false
+      t.integer :last_reply_id
+      t.datetime :created_on, null: false
+      t.datetime :updated_on, null: false
+      t.boolean :locked, default: false
+      t.integer :sticky, default: 0
+      t.datetime :sticked_on, default: nil, null: true
     end
   end
 
   def self.indices(migration)
     create_indices(migration) do |t|
-      # Nested Set
-      t.index %i[root_id lft rgt]
-
-      t.index :type_id
-      t.index :status_id
-      t.index :category_id
-      t.index :author_id
-      t.index :assigned_to_id
-      t.index :created_at
-      t.index :fixed_version_id
-      t.index :updated_at
-      t.index %i[project_id updated_at]
+      t.index :author_id, name: 'index_messages_on_author_id'
+      t.index :board_id, name: 'messages_board_id'
+      t.index :created_on, name: 'index_messages_on_created_on'
+      t.index :last_reply_id, name: 'index_messages_on_last_reply_id'
+      t.index :parent_id, name: 'messages_parent_id'
+      t.index %i[board_id updated_on]
     end
   end
 end
